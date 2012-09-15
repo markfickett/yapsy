@@ -478,9 +478,8 @@ class PluginManager(object):
 			try:
 				candidateMainFile = open(candidate_filepath+".py","r")	
 				exec(candidateMainFile,candidate_globals)
-			except Exception,e:
-				log.debug("Unable to execute the code in plugin: %s" % candidate_filepath)
-				log.debug("\t The following problem occured: %s %s " % (os.linesep, e))
+			except Exception:
+				log.error("Unable to execute the code in plugin: %s" % candidate_filepath, exc_info=True)
 				if "__init__" in  os.path.basename(candidate_filepath):
 					sys.path.remove(plugin_info.path)
 				continue

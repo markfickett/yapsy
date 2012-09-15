@@ -459,11 +459,17 @@ class PluginManager(object):
 		If a callback function is specified, call it before every load
 		attempt.  The ``plugin_info`` instance is passed as an argument
 		to the callback.
+
+		Return a list of processed ``plugin_info`` instances. For
+		any plugins which were not loaded, the ``error`` attribute will
+		be populated with a (type, value, traceback) tuple, from
+		sys.exc_info().
 		"""
 # 		print "%s.loadPlugins" % self.__class__		
 		if not hasattr(self, '_candidates'):
 			raise ValueError("locatePlugins must be called before loadPlugins")
 
+		processed_plugins = []
 		for candidate_infofile, candidate_filepath, plugin_info in self._candidates:
 			# if a callback exists, call it before attempting to load
 			# the plugin so that a message can be displayed to the
@@ -478,10 +484,13 @@ class PluginManager(object):
 			try:
 				candidateMainFile = open(candidate_filepath+".py","r")	
 				exec(candidateMainFile,candidate_globals)
+				processed_plugins.append(plugin_info)
 			except Exception:
 				log.error("Unable to execute the code in plugin: %s" % candidate_filepath, exc_info=True)
 				if "__init__" in  os.path.basename(candidate_filepath):
 					sys.path.remove(plugin_info.path)
+				plugin_info.error = sys.exc_info()
+				processed_plugins.append(plugin_info)
 				continue
 			
 			if "__init__" in  os.path.basename(candidate_filepath):
@@ -511,6 +520,7 @@ class PluginManager(object):
 		# Remove candidates list since we don't need them any more and
 		# don't need to take up the space
 		delattr(self, '_candidates')
+		return processed_plugins
 
 	def collectPlugins(self):
 		"""

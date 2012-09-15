@@ -457,8 +457,8 @@ class PluginManager(object):
 		slot of the ``category_mapping``.
 
 		If a callback function is specified, call it before every load
-		attempt.  The ``plugin_info`` instance is passed as an argument to
-		the callback.
+		attempt.  The ``plugin_info`` instance is passed as an argument
+		to the callback.
 		"""
 # 		print "%s.loadPlugins" % self.__class__		
 		if not hasattr(self, '_candidates'):

@@ -517,6 +517,11 @@ class PluginManager(object):
 						current_category = None
 					break
 
+			if not (plugin_info.plugin_object or plugin_info.error):
+				log.warning('No plubin object found for "%s": it may not do anything! Check that the plugin '
+						+ 'extends IPlugin, and if there is an __init__ file that it imports '
+						+ 'the class which extends IPlugin.', plugin_info.name)
+
 		# Remove candidates list since we don't need them any more and
 		# don't need to take up the space
 		delattr(self, '_candidates')
